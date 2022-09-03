@@ -20,11 +20,11 @@ Add this plugin to your `vite.config.js`:
 import nativeSW from 'vite-plugin-native-sw'
 
 export default defineConfig({
-	plugins: [
-		nativeSW({
-			src: resolve(__dirname, 'src/service-worker.ts')
-		}),
-	],
+  plugins: [
+    nativeSW({
+      src: resolve(__dirname, 'src/service-worker.ts')
+    }),
+  ],
 })
 ```
 
@@ -37,14 +37,14 @@ declare const self: ServiceWorkerGlobalScope
 const SW_VERSION = '%SW_VERSION%'  // it will be replaced on each build
 
 self.addEventListener('install', (event: ExtendableEvent) => {
-	event.waitUntil(self.skipWaiting())
+  event.waitUntil(self.skipWaiting())
 })
 
 self.addEventListener('activate', (event: ExtendableEvent) => {
-	event.waitUntil(async function () {
-		await self.clients.claim()
-		console.log('SW activated', SW_VERSION)
-	}())
+  event.waitUntil(async function () {
+    await self.clients.claim()
+    console.log('SW activated', SW_VERSION)
+  }())
 })
 ```
 
@@ -61,16 +61,15 @@ registerSW().catch(console.error)
 
 - `src` - path to the SW entry point.
 - `filename` - path to the SW output file. Default: `sw.js`.
-- `genVersion` - function to generate the `SW_VERSION`. By default, it uses a random string for each build. You can use
-	this option to get another behavior.
+- `genVersion` - function to generate the `SW_VERSION`. By default, it uses a random string for each build. You can use this option to get another behavior.
 
 ```ts
 import nativeSW, {createHashFromFiles} from 'vite-plugin-native-sw'
 
 nativeSW({
-	src: resolve(__dirname, 'src/service-worker.ts'),
-	filename: 'my-sw.js',
-	genVersion: async () => createHashFromFiles('index.html', 'admin.html'),
+  src: resolve(__dirname, 'src/service-worker.ts'),
+  filename: 'my-sw.js',
+  genVersion: async () => createHashFromFiles('index.html', 'admin.html'),
 })
 ```
 
