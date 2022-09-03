@@ -5,7 +5,7 @@
   "packageManager": "pnpm@7.9.5",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
-  "types": "index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsup src --dts --clean --format cjs,esm"
