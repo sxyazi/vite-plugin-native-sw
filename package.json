@@ -1,0 +1,36 @@
+{
+  "name": "vite-plugin-native-sw",
+  "version": "1.0.0",
+  "description": "A Vite plugin for Service Worker of native support.",
+  "packageManager": "pnpm@7.9.5",
+  "main": "dist/sw-plugin.js",
+  "module": "dist/sw-plugin.mjs",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup src --dts --clean --format cjs,esm"
+  },
+  "keywords": [
+    "vite",
+    "vite-plugin",
+    "service-worker",
+    "pwa",
+    "sw",
+    "vue",
+    "react"
+  ],
+  "author": "sxyazi <sxyazi@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/parser": "^7.18.13",
+    "@types/node": "^18.7.14",
+    "tsup": "^6.2.3",
+    "typescript": "^4.8.2",
+    "vite": "^3.0.9"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+name: 'CI'
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+jobs:
+  Release:
+    if: |
+      github.ref == 'refs/heads/main' &&
+      github.event.repository.fork == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+      - name: Get pnpm cache directory path
+        id: pnpm-cache-dir-path
+        run: echo "::set-output name=dir::$(pnpm store path)"
+      - uses: actions/cache@v3
+        id: pnpm-cache
+        with:
+          path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+      - name: Install Dependencies
+        run: pnpm i --frozen-lockfile
+      - name: Build 🗜️
+        run: pnpm run build
+      - name: Release 🎉
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm dlx semantic-release
