@@ -28,7 +28,8 @@ export default defineConfig({
 })
 ```
 
-The `src/service-worker.ts` file will be used as the SW entry point. It might look like this ([more examples](examles)):
+The `src/service-worker.ts` file will be used as the SW entry point. It might look like
+this ([more examples](examples)):
 
 ```ts
 /// <reference lib="webworker" />
