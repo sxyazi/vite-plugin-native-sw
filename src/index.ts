@@ -1,8 +1,8 @@
 import type {Plugin, ResolvedConfig} from 'vite'
-import {promises as fs} from 'fs'
-import {resolve} from 'path'
+import {promises as fs} from 'node:fs'
+import {resolve} from 'node:path'
 import {parse} from '@babel/parser'
-import {createHash} from 'crypto'
+import {createHash, randomBytes} from 'node:crypto'
 
 const replaceImports = (code: string) => {
 	const ast = parse(code, {
@@ -35,7 +35,7 @@ interface Options {
 	genVersion?: () => Promise<string>
 }
 
-const swPlugin = ({src, filename = 'sw.js', genVersion}: Options): Plugin[] => {
+export const nativeSW = ({src, filename = 'sw.js', genVersion}: Options): Plugin[] => {
 	let version: string
 	let mode: string
 
@@ -44,7 +44,7 @@ const swPlugin = ({src, filename = 'sw.js', genVersion}: Options): Plugin[] => {
 		apply: 'build',
 		enforce: 'post',
 		async configResolved() {
-			version = genVersion ? await genVersion() : 'prod'
+			version = genVersion ? await genVersion() : randomBytes(20).toString('hex').substring(0, 8)
 		},
 		buildStart() {
 			this.emitFile({
@@ -116,5 +116,3 @@ const swPlugin = ({src, filename = 'sw.js', genVersion}: Options): Plugin[] => {
 		},
 	}]
 }
-
-export default swPlugin

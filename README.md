@@ -17,7 +17,7 @@ pnpm add -D vite-plugin-native-sw
 Add this plugin to your `vite.config.js`:
 
 ```js
-import nativeSW from 'vite-plugin-native-sw'
+import {nativeSW} from 'vite-plugin-native-sw'
 
 export default defineConfig({
   plugins: [
@@ -28,13 +28,13 @@ export default defineConfig({
 })
 ```
 
-The `src/service-worker.ts` file will be used as the SW entry point. It might look like this:
+The `src/service-worker.ts` file will be used as the SW entry point. It might look like this ([more examples](examles)):
 
 ```ts
 /// <reference lib="webworker" />
 export type {}
 declare const self: ServiceWorkerGlobalScope
-const SW_VERSION = '%SW_VERSION%'  // it will be replaced on each build
+const SW_VERSION = '%SW_VERSION%'  // it will be replaced on each build, and only fixed string "dev" for development
 
 self.addEventListener('install', (event: ExtendableEvent) => {
   event.waitUntil(self.skipWaiting())
@@ -61,10 +61,11 @@ registerSW().catch(console.error)
 
 - `src` - path to the SW entry point.
 - `filename` - path to the SW output file. Default: `sw.js`.
-- `genVersion` - function to generate the `SW_VERSION`. By default, it uses a random string for each build. You can use this option to get another behavior.
+- `genVersion` - function to generate the `SW_VERSION`. By default, it uses a random string for each build. You can set
+  this option to get other behaviors.
 
 ```ts
-import nativeSW, {createHashFromFiles} from 'vite-plugin-native-sw'
+import {nativeSW, createHashFromFiles} from 'vite-plugin-native-sw'
 
 nativeSW({
   src: resolve(__dirname, 'src/service-worker.ts'),
