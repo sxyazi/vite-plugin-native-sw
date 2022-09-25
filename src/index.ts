@@ -52,7 +52,7 @@ export interface Options {
 }
 
 export const nativeSW = ({entries}: Options): Plugin[] => {
-	let mode: string
+	let conf: ResolvedConfig
 	const versions: Record<string, string> = {}
 	entries = entries.map(entry => ({...entry, dist: entry.dist.replace(/^\/+/, '')}))
 
@@ -99,21 +99,31 @@ export const nativeSW = ({entries}: Options): Plugin[] => {
 		name: 'sw-plugin:dev',
 		apply: 'serve',
 		enforce: 'pre',
+		configResolved(config: ResolvedConfig) {
+			conf = config
+		},
 		resolveId(source: string) {
 			return entries.find(({dist}) => source === `/${dist}`)?.src
 		},
 		async load(id: string) {
-			for (const {src, dist} of entries) {
-				if (id === src) {
-					return (await fs.readFile(id, 'utf-8')).replaceAll('%SW_VERSION%', 'dev')
+			for (const {src} of entries) {
+				if (id !== src) {
+					continue
 				}
+
+				let code = await fs.readFile(id, 'utf-8')
+				if (Object.keys(conf.define ?? {}).length) {
+					code = `import '/@vite/env'\n\n${code}`
+				}
+				return code.replaceAll('%SW_VERSION%', 'dev')
 			}
+
 			return undefined
 		},
 	}, {
 		name: 'sw-plugin:virtual',
 		configResolved(config: ResolvedConfig) {
-			mode = config.mode
+			conf = config
 		},
 		resolveId(source) {
 			if (source === 'virtual:sw-plugin') {
@@ -128,13 +138,13 @@ export const nativeSW = ({entries}: Options): Plugin[] => {
 
 			const packed = entries.map(({dist}) => ({
 				dist,
-				version: mode === 'production' ? versions[dist] : 'dev',
+				version: conf.mode === 'production' ? versions[dist] : 'dev',
 			}))
 
 			return `
 export const packedSW = () => (${JSON.stringify(packed)})
 export const registerSW = (dist, options) => ('serviceWorker' in navigator &&
-								navigator.serviceWorker.register('/' + dist, {type: '${mode === 'production' ? 'classic' : 'module'}', ...options}))`
+								navigator.serviceWorker.register('/' + dist, {type: '${conf.mode === 'production' ? 'classic' : 'module'}', ...options}))`
 
 		},
 	}]
